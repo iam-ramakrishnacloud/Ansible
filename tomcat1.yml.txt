@@ -1,0 +1,32 @@
+---
+- hosts: 172.31.13.191
+  become: yes
+  tasks:
+  - name: Convert the signed certificate into a PKCS12 file with the attached private key
+    openssl_pkcs12:
+      action: export
+      path: /etc/ssl/blakshmi/prod.blakshmi.murugan.pfx
+      name: 172.31.13.191
+      privatekey_path: /etc/ssl/blakshmi/prod.blakshmi.key
+      #privatekey_passphrase: "Ksdc@123"
+      passphrase: Murugan@123
+      certificate_path: /etc/ssl/blakshmi/prod.blakshmi.crt
+      other_certificates: /etc/ssl/blakshmi/prod.blakshmi.inter.crt
+      state: present
+  - name: Delete port change in server.xml
+    lineinfile:
+       path: /DATA/apache-tomcat-10.1.7/conf/server.xml
+       backup: yes
+       regexp: '^(.*\<Certificate certificateKeystoreFile=)(.*)(.*\ certificateKeystorePassword=)(.*)'
+       line: <Certificate certificateKeystoreFile="/etc/ssl/blakshmi/prod.blakshmi.murugan.pfx" certificateKeystorePassword="Murugan@123"
+       backrefs: yes
+
+  - name: Stop tomcat Service
+    shell: nohup /DATA/apache-tomcat-10.1.7/bin/shutdown.sh
+
+  - name: Start tomcat Service
+    shell: nohup /DATA/apache-tomcat-10.1.7/bin/startup.sh
+
+
+  # - name: covert .pfx format
+  #    shell: openssl pkcs12 -export -out blakshmi.pfx -inkey blakshmi.key -in blakshmi.crt -password pass:Ksdc@123

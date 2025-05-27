@@ -1,0 +1,13 @@
+---
+ - hosts: status
+   tasks:
+   - name: av check status
+     command: systemctl is-active httpd.service
+     ignore_errors: yes
+     register: result
+
+   - name: start
+     service:
+       name: httpd.service
+       state: started
+     when: result.rc ==3

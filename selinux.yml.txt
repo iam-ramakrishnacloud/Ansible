@@ -1,0 +1,8 @@
+---
+ - hosts: test2
+   tasks:
+   - name: Selinux disabled based on condition
+     selinux:
+       policy: targeted
+       state: permissive
+     when: ansible_facts.selinux.status == 'enabled'

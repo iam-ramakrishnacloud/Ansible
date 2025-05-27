@@ -1,0 +1,34 @@
+
+---
+ - name: Gather CPU and RAM
+   hosts: cpu
+   tasks:
+   - name: Gather CPU
+     shell: top -bn1 | grep 'Cpu(s)' | awk '{print $2}'
+     register: cpu_usage
+   - name: Gather RAM
+     shell: free -g| awk '/Mem/ {printf "%.2f\n", $3/$2 * 100}'
+     register: ram_usage
+   - name: Gather Disk
+     shell: "df -h --outpu=pcent / | awk 'NR==2 {print $1}'"
+     register: disk_space
+   - name: Network connections
+     shell: netstat -ant | grep EST | wc -l
+     register: network_con
+   - name: Uasge stats
+     debug:
+       msg:
+         - "Executed On: {{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}"
+         - "cpu uasge: {{ cpu_usage.stdout }}%"
+         - "disk space: {{ disk_space.stdout }}"
+         - "ram usage: {{ ram_usage.stdout }}%"
+         - "network connection: {{ network_con.stdout }}"
+   - name: mail result
+     mail:
+       host: mail.karnataka.gov.in
+       username: "serversupport"
+       password: "$E(ure@678"
+       secure: try
+       to: storagesupport@karnataka.gov.in
+       subject: "cpu"
+       body: "{{ cpu_usage.stdout }}"

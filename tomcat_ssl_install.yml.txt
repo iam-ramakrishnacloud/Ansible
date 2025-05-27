@@ -1,0 +1,34 @@
+---
+- hosts: 172.31.13.85
+  tasks:
+  - name: Convert the certificate a PKCS12 file
+    openssl_pkcs12:
+      action: export
+      path: /etc/ssl/blakshmi/blakshmi.pfx
+      friendly_name: 172.31.13.85
+      privatekey_path: /etc/ssl/blakshmi/blakshmi.key
+      passphrase: Test@123
+      certificate_path: /etc/ssl/blakshmi/blakshmi.crt
+      #other_certificates: /home/blakshmi/prod.blakshmi.inter.crt
+      state: present
+
+  - name: change in server.xml
+    lineinfile:
+       path: /home/apache-tomcat-9.0.86/conf/server.xml
+       backup: yes
+       regexp: '^(.*\keystoreFile=)(.*)(.*\ keystorePass=)(.*)'
+       line: keystoreFile="/etc/ssl/blakshmi.pfx" keystorePass="Test@123"
+       backrefs: yes
+
+       # - name: replace ssl certicate to server.xml file
+       #lineinfile:
+       #path: /DATA/apache-tomcat-10.1.7/conf/server.xml
+       #backup: yes
+       #regexp: '^(.*\<Certificate certificateKeystoreFile=)(.*)(.*\ certificateKeystorePassword=)(.*)'
+       #line: <Certificate certificateKeystoreFile="/etc/ssl/blakshmi/prod.blakshmi.test.pfx" certificateKeystorePassword="Welcome@123"
+       #backrefs: yes
+  - name: Stop tomcat Service
+    shell: nohup /home/apache-tomcat-9.0.86/bin/shutdown.sh
+
+  - name: Start tomcat Service
+    shell: nohup /home/apache-tomcat-9.0.86/bin/startup.sh

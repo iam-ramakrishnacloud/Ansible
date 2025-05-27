@@ -1,0 +1,30 @@
+---
+- name: This is a patching playbook
+  hosts: public
+  tasks:
+  - name: Execute the yum clean command
+    register: cleanout
+    command: yum clean all
+
+  - debug:
+      var: cleanout.stdout_lines
+
+  - name: Execute the yum repolist command
+    register: repolistout
+    command: yum repolist -v
+
+  - debug:
+      var: repolistout.stdout_lines
+
+  - name: update the Rhel-8 all package
+    yum:
+      name: '*'
+      state: latest
+      update_cache: yes
+      update_only: yes
+    when: (ansible_distribution == "RedHat" and ansible_distribution_major_version == "7") or
+          (ansible_distribution == "RedHat" and ansible_distribution_major_version == "8")
+    register: yum_update
+
+  - name:  Apply Security Patches
+    shell: yum update

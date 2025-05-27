@@ -1,0 +1,84 @@
+ ---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    datast: FS9200-D3EOFF-DS03
+    vm_dns: 172.31.17.210,172.31.17.211
+    vc_name: 172.31.29.177
+    vc_user: administrator@vsphere.local
+    vc_pass: B!r@Ceg@Vmware@456
+    dc: KSDC-II
+    cls: INF-D3-EOFF2-CLS
+  vars_prompt:
+
+   - name: "vm_templ"
+     prompt: "Which OS you need? RedHat 9.3 (RHEL9.3-TEMPLATE) or Redhat 8.9 (RHEL_8.9_NEW_TEMPLATE)"
+     private: no
+
+   - name: "web_vm_name"
+     prompt: "Name of the virtual Master virtual machine"
+     private: no
+
+   - name: "web_vm_ip"
+     prompt: "Master Virtual Machine IP Address"
+     private: no
+
+   - name: "web_vm_smask"
+     prompt: "Subnetmask for Virtual Machine"
+     private: no
+
+   - name: "web_vm_gw"
+     prompt: "Gateway of the Virtual Machine"
+     private: no
+   - name: "vm_memory"
+     prompt: "Memory size required?"
+     private: no
+   - name: "vm_cpu"
+     prompt: "CPU size required?"
+     private: no
+   - name: "disk_size"
+     prompt: "Second disk size required?"
+     private: no
+  tasks:
+    - name: Clone the {{ vm_templ }} Virtual machine from an existing template.
+      vmware_guest:
+        validate_certs: False
+        hostname: "{{ vc_name }}"
+        username: "{{ vc_user }}"
+        password: "{{ vc_pass }}"
+        cluster:  "{{ cls }}"
+        datacenter: "{{ dc }}"
+        folder: "/{{ dc}}/vm"
+        name: "{{ web_vm_name }}"
+        template: "{{ vm_templ }}"
+        state: poweredoff
+        disk:
+          - size_gb: 110
+            type: thin
+            datastore: "{{ datast }}"
+          - size_gb: "{{ disk_size }}"
+            type: thin
+            datastore: FS9200-D3EOFF-DS03
+            state: present
+        hardware:
+          memory_mb: "{{ vm_memory }}"
+          num_cpus: "{{ vm_cpu }}"
+          hot_add_enabled: true"
+        networks:
+        - name: EOFF-900
+          type: static
+          device_type: vmxnet3
+          ip: "{{ web_vm_ip }}"
+          netmask: "{{ web_vm_smask }}"
+          gateway: "{{ web_vm_gw }}"
+          dns_servers: "{{ vm_dns }}"
+          connected: true
+        customization:
+          hostname: "{{ web_vm_name }}"
+        wait_for_ip_address: true
+        wait_for_customization: true
+      register: created_web_vm
+    - debug:
+         var: created_web_vm.instance.ipv4
+

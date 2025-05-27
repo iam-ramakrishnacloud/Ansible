@@ -1,0 +1,30 @@
+---
+ - name: vmware disk to vm
+   hosts: 172.31.13.85
+
+   tasks:
+   - name: add new disk
+     vmware_guest_facts:
+       hostname: 172.31.13.56
+       username: administrator@vsphere.local
+       password: VMware$dc@789
+       validate_certs: False
+       datacenter: KSDC
+       name: inf-test-vp04
+       #delegate_to: localhost
+
+       disk:
+        - size_gb: 10
+          type: thin
+          state: present
+          datastore: 3PAR-LINDBCLS-DS01
+          scsi_controller: 1
+          unit_number: 1
+          #disk_mode: 'independent_persistent'
+          #datastore: "{{ host_datastore }}"
+          #autoselect_datastore: True
+          #scsi_controller: "1"
+          #disk_mode: 'independent_persistent'
+          #unit_number: "1"
+          #scsi_type: 'paravirtual'
+

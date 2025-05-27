@@ -1,0 +1,23 @@
+--
+ - hosts: status
+   tasks:
+   - name: lvm
+     lvg:
+        vg: test1
+        pvs: /dev/sdf
+   - name: lvm
+     lvol:
+        vg: test1
+        lv: rest1
+        size: 2G
+   - name: filesystem
+     filesystem:
+        fstype: xfs
+        dev: /dev/test1/rest1
+   - name: mount
+     mount:
+        name: /opt/dest1
+        src: /dev/test1/rest1
+        fstype: xfs
+        state: mounted
+~

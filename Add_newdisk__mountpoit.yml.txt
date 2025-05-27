@@ -1,0 +1,122 @@
+---
+ - hosts: violet
+   tasks:
+
+           #  - name: create a VG
+           #    lvg:
+           #      vg: eoffice_vg
+           #      pvs: /dev/sdb
+
+           #  - name: create a LV on app_vg
+           #    lvol:
+           #            vg: eoffice_vg
+           #            lv: eoffice_lv
+           #            size: 100%FREE
+           #            shrink: true
+           #
+           #  - name: Create directory data if does not exist
+           #    file:
+           #           path: /eOffice
+           #           state: directory
+           #           mode: '0755'
+           #
+           #  - name: filesystem
+           #    filesystem:
+           #            fstype: xfs
+           #            dev: /dev/eoffice_vg/eoffice_lv
+           #
+           #  - name: mount
+           #    mount:
+           #           name: /eOffice
+           #           src: /dev/eoffice_vg/eoffice_lv
+           #           fstype: xfs
+           #           state: mounted
+
+   - name: create a VG on sdc
+     lvg:
+        vg: mongo_vg
+        pvs: /dev/sdc
+
+   - name: create a LV on app_vg
+     lvol:
+        vg: mongo_vg
+        lv: mongo_lv
+        size: 100%FREE
+        shrink: true
+
+   - name: Create directory data if does not exist
+     file:
+       path: /MongoDB
+       state: directory
+       mode: '0755'
+
+   - name: filesystem
+     filesystem:
+        fstype: xfs
+        dev: /dev/mongo_vg/mongo_lv
+
+   - name: mount
+     mount:
+        name: /MongoDB
+        src: /dev/mongo_vg/mongo_lv
+        fstype: xfs
+        state: mounted
+
+   - name: create a VG on sdd
+     lvg:
+        vg: log_vg
+        pvs: /dev/sdd
+
+   - name: create a LV on app_vg
+     lvol:
+        vg: log_vg
+        lv: log_lv
+        size: 100%FREE
+        shrink: true
+
+   - name: Create directory data if does not exist
+     file:
+       path: /Logs
+       state: directory
+       mode: '0755'
+
+   - name: filesystem
+     filesystem:
+        fstype: xfs
+        dev: /dev/log_vg/log_lv
+
+   - name: mount
+     mount:
+        name: /Logs
+        src: /dev/log_vg/log_lv
+        fstype: xfs
+        state: mounted
+
+   - name: create a VG on sde
+     lvg:
+        vg: pgsql_vg
+        pvs: /dev/sdb
+
+   - name: create a LV on app_vg
+     lvol:
+        vg: pgsql_vg
+        lv: pgsql_lv
+        size: 100%FREE
+        shrink: true
+
+   - name: Create directory data if does not exist
+     file:
+       path: /var/lib/pgsql
+       state: directory
+       mode: '0755'
+
+   - name: filesystem
+     filesystem:
+        fstype: xfs
+        dev: /dev/pgsql_vg/pgsql_lv
+   - name: mount
+     mount:
+        name: /var/lib/pgsql
+        src: /dev/pgsql_vg/pgsql_lv
+        fstype: xfs
+        state: mounted

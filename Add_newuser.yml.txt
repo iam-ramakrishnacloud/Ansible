@@ -1,0 +1,19 @@
+---
+- name:
+  hosts: 172.31.13.85
+  become: yes
+  tasks:
+  - name: aad user murugan
+    user:
+      name: murugan
+      password: "{{ 'Welcome@123' | password_hash('sha512', 'murugan') }}"
+      shell: /bin/bash
+      update_password: always
+      state: present
+
+  - name: Give sudo access to new user
+    lineinfile:
+            path: /etc/sudoers
+            backup: yes
+            insertafter: 'root ALL=(ALL) ALL'
+            line: murugan ALL=(ALL)     ALL

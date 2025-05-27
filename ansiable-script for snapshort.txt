@@ -1,0 +1,20 @@
+---
+ - name: vm
+   hosts: localhost
+   connection: local
+   gather_facts: no
+   vars:
+     - target_host: windows
+   tasks:
+   - name: clone
+     vmware_guest_snapshot:
+       hostname: 172.31.29.177
+       username: administrator@vsphere.local
+       password: VMware$dc@789
+       validate_certs: False
+       datacenter: KSDC-II
+       folder: /KSDC-II/vm
+       name: "{{ windows }}"
+       state: present
+       snapshot_name: ansible2
+

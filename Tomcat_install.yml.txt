@@ -1,0 +1,38 @@
+---
+- hosts: 172.31.13.85
+  tasks:
+   - name: Make sure that we can connect to the machine
+     ping:
+
+   - name: Install JAVA
+     yum:
+       name: java*
+       state: present
+
+   - name: download tomcat using get_url
+     become: yes
+     get_url:
+        url: http://172.31.13.191/pub/apache-tomcat-9.0.86.tar.gz
+        dest: /Application
+
+   - name: Extract Tomcat archive
+     command: tar zxvf /Application/apache-tomcat-9.0.86.tar.gz -C /Application creates=/Application/apache-tomcat-9.0.86
+
+   - name: Change ownership of Tomcat installation
+     file: path=/Application/apache-tomcat-9.0.86
+
+   - name: Change ownership of tomcat directory
+     file:
+        path: /Application/apache-tomcat-9.0.86
+        mode: "u+rwx,g+rwx,o=rwx"
+        recurse: yes
+        state: directory
+        #- name: update port change in server.xml
+        #lineinfile:
+        #path: /Application/apache-tomcat-10.1.7/conf/server.xml
+        #backup: yes
+        #regexp: '^(.*<Connector port=")\d+(" protocol="HTTP.*)$'
+        #line: '<Connector port="8080" protocol="HTTP/1.1"'
+
+   - name: Start tomcat Service
+     shell: nohup /Application/apache-tomcat-9.0.86/bin/startup.sh

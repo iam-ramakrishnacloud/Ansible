@@ -1,0 +1,27 @@
+- hosts:
+  remote_user: root
+  become: true
+  vars:
+    project_root: /var/www/html
+  tasks:
+  - name: Update latest httpd
+    yum:
+      name: yum update httpd
+      state: latest
+
+  - name: Install Apache Webserver
+    yum:
+     pkg: httpd
+     state: latest
+
+  - name: Enable Apache on system
+    service:
+     name: httpd
+     enabled: yes
+     state: started
+
+  handlers:
+  - name: restart apache
+    service:
+     name: httpd
+     state: restarted

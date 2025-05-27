@@ -1,0 +1,23 @@
+---
+ - name: vm
+   hosts: localhost
+   connection: local
+   gather_facts: no
+   tasks:
+   - name: clone
+     vmware_guest_disk:
+       hostname: 172.31.13.56
+       username: administrator@vsphere.local
+       password: VMware$dc@789
+       validate_certs: False
+       name: RHEL-rhel-8.7
+       datacenter: KSDC
+       folder: /KSDC/vm
+       cluster: LINDBSYN-CLS
+       disk:
+        - datastore: 3PAR-LINDBCLS-DS01
+          scsi_controller: 0
+          controller_type: paravirtual
+          unit_number: 5
+          type: thin
+          size_gb: 75

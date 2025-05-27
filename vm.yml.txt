@@ -1,0 +1,30 @@
+---
+ - name: vmware disk to vm
+   hosts: webserver
+   gather_facts: true
+   become: false
+   collections:
+     - community.vmware
+   pre_tasks:
+     - include_vars: vars.yml
+
+     - name: add new disk to vmware_guest_disk
+       vmware_guest_disk:
+       vars:
+         vmware_guest_disk_params:
+         hostname: "{{ vcenter_hostname }}"
+         username: "{{ vcenter_username }}"
+         password: "{{ vcenter_password }}"
+         validate_certs: False
+         datacenter: "inf-vcsa-vp01.karnataka.gov.in"
+         name: "inf-test-vp04"
+         disk:
+          - size_gb: 10
+            type: thin
+            state: present
+            #datastore: "{{ host_datastore }}"
+            autoselect_datastore: True
+            scsi_controller: "1"
+            disk_mode: 'independent_persistent'
+            unit_number: "1"
+            scsi_type: 'paravirtual'

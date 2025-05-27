@@ -1,0 +1,8 @@
+---
+vcenter_hostname: "172.31.13.56"
+vcenter_datacenter: "KSDC"
+vcenter_validate_certs: false
+vcenter_username: "administrator@vsphere.local"
+vcenter_password: "VMware$dc@789"
+vm_name: "items"
+vm_folder: "/KSDC/vm"

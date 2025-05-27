@@ -1,0 +1,7 @@
+---
+ - hosts: syslog1
+   tasks:
+   - name: restart services
+     service:
+       name: rsyslog.service
+       state: restarted

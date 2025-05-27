@@ -1,0 +1,46 @@
+---
+- hosts: 172.31.13.84
+  become: yes
+  tasks:
+    - name: Install openssl package
+      yum:
+        pkg: openssl
+        state: latest
+
+    - name: Create ssl directory
+      file:
+        path: /etc/ssl/
+        mode: '0775'
+        recurse: yes
+        state: directory
+
+    - name: Generate Private key
+      openssl_privatekey:
+        path: /etc/ssl/blakshmi.key
+        type: RSA
+        size: 2048
+
+    - openssl_csr:
+        path: /etc/ssl/blakshmi.csr
+        privatekey_path: /etc/ssl/blakshmi.key
+        country_name: IN
+        state_or_province_name: Karnataka
+        locality_name: Bangalore
+        organization_name: Department of women and child development
+        organizational_unit_name: BWCD
+        common_name: blakshmi.karnataka.gov.in
+
+
+
+
+
+
+
+
+
+        #- name: Generate a self signed certificate
+        #openssl_certificate:
+        #csr_path: /etc/ssl/blakshmi/blakshmi.csr
+        #path: /etc/ssl/blakshmi/blakshmi.crt
+        #privatekey_path: /etc/ssl/blakshmi/blakshmi.key
+        #provider: selfsigned

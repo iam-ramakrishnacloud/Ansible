@@ -1,0 +1,14 @@
+---
+ - hosts: 172.31.13.78
+   tasks:
+   - name: copy AV agent into all client servers.
+     copy:
+       src: /opt/Agent-Core-RedHat_EL8-20.0.0-7719.x86_64.rpm
+       dest: /opt
+   - name: Install rpm package on all client servrs.
+     command: rpm -ivh /opt/Agent-Core-RedHat_EL8-20.0.0-7719.x86_64.rpm
+     ignore_errors: yes
+   - name: start ds_agent service
+     command: sh /opt/ds_agent/dsa_control -r
+   - name: start ds_agent service1vi a
+     command: sh /opt/ds_agent/dsa_control -a dsm://172.31.8.36:4120

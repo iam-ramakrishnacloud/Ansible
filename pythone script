@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# pip install pandas
+
+file '='report.xlsx'
+sheet_name'='your_sheet_name'  # Replace with the actual sheet name
+
+# Open the excel document and import as a pandas data frame
+<'df'='pd.read_excel(file, sheet_name=sheet_name)'>
+
+# Get the values of the column 'IPV4 address'
+ip_addresses = df['IPV4 Address']
+
+# To find whether ip address is present in files
+filename'='your_log_file.log'  # Replace with the actual log file path
+ip_to_search = "ip_address1"
+
+with open(filename) as f:
+    log = f.read()
+
+for ip in ip_addresses:
+    ip_list = re.findall(ip_to_search, log)
+    if ip_list:
+        print("IP address found in file")
+    else:
+        print("IP address not found in file")
+        
+    echo "$RANDOM" 

@@ -1,0 +1,59 @@
+---
+- hosts: murugan_rsa
+  become: true
+
+  tasks:
+   - name: Create directory data if does not exist
+     file:
+      path: /usr/local/sa
+      state: directory
+      mode: '0777'
+
+   - name: Create directory data if does not exist
+     file:
+      path: /etc/rsa
+      state: directory
+
+   - name: copy rsa_script
+     copy:
+       src: /opt/sasftpagent.sh
+       dest: /usr/local/sa/
+
+   - name: copy rsa_conf_file
+     copy:
+       src: /opt/sasftpagent.conf
+       dest: /etc/rsa/
+
+   - name: ssh_keygen
+     openssh_keypair:
+        path: "/root/.ssh/id_rsa"
+        type: rsa
+        size: 1024
+        state: present
+        force: no
+
+   - name: crontab RSA task add
+     cron:
+      name: rsa_script_runner
+      minute: "*/15"
+      hour: "*"
+      weekday: "*"
+      job: /usr/local/sa/sasftpagent.sh
+      user: "root"
+   - name: hostname
+     command: hostname -s
+     register: hostname_status
+
+   - name: output
+     debug:
+      msg: "{{ hostname_status.stdout }}"
+
+   - name: view the .pub
+     command: cat /root/.ssh/id_rsa.pub
+     register: httpd_status
+
+   - name: out_2
+     debug:
+      msg: "{{ httpd_status.stdout }}"
+
+   - local_action: lineinfile line="{{ hostname_status.stdout }}/{{ httpd_status.stdout }}" path="/root/murugan/out.txt"

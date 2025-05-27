@@ -1,0 +1,22 @@
+---
+- name: This is a patching playbook
+  hosts: bhm
+  tasks:
+  - name: Execute the yum clean command
+    register: cleanout
+    command: yum clean all
+
+  - debug:
+      var: cleanout.stdout_lines
+
+  - name: Execute the yum repolist command
+    register: repolistout
+    command: yum repolist -v
+
+  - debug:
+      var: repolistout.stdout_lines
+  - name: Remove old packages
+    shell: yum remove gstreamer1-plugins-bad-free -y
+
+  - name:  Apply Security Patches
+    shell: yum update -y

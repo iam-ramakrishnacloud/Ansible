@@ -1,0 +1,21 @@
+---
+ - hosts: muruganj
+   tasks:
+   - name: install rsyslog packages
+     yum:
+      name: rsyslog
+      state: latest
+
+   - name: add  data
+     lineinfile:
+       dest: /etc/rsyslog.conf
+       insertbefore: GLOBAL
+       line: '{{ item }}'
+     with_items:
+       - 'module(load="imudp")'
+       - 'input(type="imudp" port="514")'
+       - '*.debug @172.31.59.108:514'
+   - name: restart
+     service:
+       name: rsyslog.service
+       state: restarted

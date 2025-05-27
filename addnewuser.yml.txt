@@ -1,0 +1,21 @@
+---
+- name:
+  hosts: useradd
+  become: yes
+  tasks:
+  - name: aad user
+    user:
+      name: Nagu
+      password: "{{ '$hamr0ck' | password_hash('sha512', 'Nagu') }}"
+      shell: /bin/bash
+      update_password: always
+      state: present
+
+  - name: Give sudo access to new user
+    lineinfile:
+       path: /etc/sudoers
+       insertafter: anywhere
+       line: '{{ item }}'
+
+    with_items:
+       - 'Nagu  ALL=(ALL)     ALL'

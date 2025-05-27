@@ -1,0 +1,27 @@
+r---
+ - hosts:
+   tasks:
+   - name: create a VG on sdc
+     lvg:
+        vg: app_vg
+        pvs: /dev/sdc
+        pesize: 4
+
+   - name: create a LV on app_vg
+     lvol:
+        vg: app_vg
+        lv: app_lv
+        size: 100%FREE
+        shrink: true
+
+   - name: filesystem
+     filesystem:
+        fstype: xfs
+        dev: /dev/app_vg/app_lv
+
+   - name: mount
+     mount:
+        name: /Application
+        src: /dev/app_vg/app_lv
+        fstype: xfs
+        state: mounted
